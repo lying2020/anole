@@ -4,12 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
-# 优先使用环境变量，其次尝试从project.py导入，最后使用默认路径
-try:
-    from project import anole_7b_v0_1_path
-    default_ckpt_path = anole_7b_v0_1_path
-except ImportError:
-    default_ckpt_path = "./data"
+default_ckpt_path = "/home1/cjl/models/anole-7b"
 
 ckpt_path = Path(os.getenv("CKPT_PATH", default_ckpt_path))
 

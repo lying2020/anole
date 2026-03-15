@@ -133,7 +133,7 @@ python interleaved_generation.py -i 'Please introduce the city of Gyumri with pi
 ```
 
 #### Multimodal-in and multimodal-out
-We divide multimodal input into different segments according to different modes, and the type of each segment is "text" or "image". (See [input.json](input.json) for details.) You can control multimodal input by constructing such input files.
+We divide multimodal input into different segments according to different modes, and the type of each segment is "text" or "image". (See [input.json](inputs/input.json) for details.) You can control multimodal input by constructing such input files.
 To make the model do this inference, you can run the [inference.py](inference.py) script:
 ```shell
 python inference.py [-h] -i INPUT [-s SAVE_DIR]
@@ -142,7 +142,7 @@ python inference.py [-h] -i INPUT [-s SAVE_DIR]
 - save_dir: The directory to save the generated images.
 For instance:
 ```shell
-python inference.py -i input.json
+python inference.py -i inputs/input.json
 ```
 
 ### Fine-tune Anole & Chameleon

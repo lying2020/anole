@@ -81,7 +81,7 @@ python text2image.py -i "a beautiful sunset" -b 1 -s ./outputs/test/
 python interleaved_generation.py -i "Describe a cat with an image" -s ./outputs/test/
 
 # 多模态推理
-python inference.py -i input.json -s ./outputs/test/
+python inference.py -i inputs/input.json -s ./outputs/test/
 ```
 
 ### 不激活环境直接运行
