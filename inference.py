@@ -137,7 +137,7 @@ def main(args: argparse.Namespace):
         else:
             tokens = torch.stack(tokens_list).T
             print(f"生成完成，总共获得 {tokens.shape[1]} 个 tokens")
-            print(f"生成的 token IDs: {tokens[0].tolist() if tokens.numel() > 0 else 'empty'}")
+            # print(f"生成的 token IDs: {tokens[0].tolist() if tokens.numel() > 0 else 'empty'}")
     except KeyboardInterrupt:
         print("\n用户中断了生成过程")
         return
@@ -173,7 +173,7 @@ def main(args: argparse.Namespace):
 def parse_arguments() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description="Generate interleaved image-text content based on text instructions.")
-    parser.add_argument("-i", "--input", type=str, required=True, help="The multimodal input file.")
+    parser.add_argument("-i", "--input", type=str, default="./inputs/input1.json", help="The multimodal input file.")
     parser.add_argument("-s", "--save_dir", type=str, default="./outputs/inference/", help="The directory to save the generated images.")
     args: argparse.Namespace = parser.parse_args()
     return args
