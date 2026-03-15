@@ -1,0 +1,10 @@
+[
+    {
+        "type": "text",
+        "content": "teach me how to cook eggs, with 5 images and 5 text steps at least, each image and text should be related to the previous one, and each text step should bind a image"
+    },
+    {
+        "type": "image",
+        "content": "outputs/interleaved/1.png"
+    }
+]

@@ -20,18 +20,18 @@ def split_token_sequence(
 ) -> List[Tuple[str, torch.LongTensor]]:
     """
     Split a sequence of tokens into text and image segments.
-    
+
     Args:
         tokens (torch.LongTensor): The token sequence.
         boi (int): Begin of image token.
         eoi (int): End of image token.
-    
+
     Returns:
         List[Tuple[str, torch.LongTensor]]: List of tuples indicating segment type and tokens.
     """
     batch_size, _ = tokens.shape
     assert batch_size == 1, "Batch size must be 1"
-    
+
     device = tokens.device
     tokens = tokens[0]  # remove batch dimension
     tokens = tokens.to(device)
@@ -77,6 +77,10 @@ def main(args: argparse.Namespace):
     print(f"Image tokenizer path: {TOKENIZER_IMAGE_PATH}")
     # Generate options
     options = Options()
+    # 确保生成足够的长度
+    options.max_gen_len = 4096  # 最大生成长度
+    options.max_seq_len = 4096  # 最大序列长度
+    print(f"生成参数: max_gen_len={options.max_gen_len}, max_seq_len={options.max_seq_len}")
     # Prepare prompt
     input_path: Path = Path(args.input)
     with open(input_path, "r") as f:
@@ -95,13 +99,67 @@ def main(args: argparse.Namespace):
                 {"type": "image", "value": f"file:{abs_path}"},
             ]
     # generate
-    tokens: torch.LongTensor = model.generate(
-        batch_prompt_ui=batch_prompt_ui,
-        options=options
-    )
+    print("=" * 50)
+    print("开始生成内容...")
+    print(f"Options: txt={options.txt}, img={options.img}")
+    print(f"Prompt UI 长度: {len(batch_prompt_ui[0])}")
+    print("正在调用 model.generate()...")
+    import sys
+    sys.stdout.flush()  # 确保输出立即显示
+
+    try:
+        # 使用 stream 方法以便可以看到进度
+        token_count = 0
+        tokens_list = []
+        print("开始流式生成...")
+        eos_id = model.vocab.eos_id
+        boi_id = model.vocab.begin_image
+        eoi_id = model.vocab.end_image
+        print(f"EOS token ID: {eos_id}, BOI token ID: {boi_id}, EOI token ID: {eoi_id}")
+
+        for token in model.stream(batch_prompt_ui=batch_prompt_ui, options=options):
+            token_id = token.id.item() if token.id.numel() == 1 else token.id[0].item()
+            token_count += 1
+            print(f"Token {token_count}: ID={token_id}", flush=True)
+
+            # 检查是否是特殊 token
+            if token_id == eos_id:
+                print(f"  检测到 EOS token，停止生成")
+            elif token_id == boi_id:
+                print(f"  检测到 BOI (Begin of Image) token")
+            elif token_id == eoi_id:
+                print(f"  检测到 EOI (End of Image) token")
+
+            tokens_list.append(token.id)
+
+            if token_count % 10 == 0:
+                print(f"已生成 {token_count} 个 tokens...", flush=True)
+
+        if not tokens_list:
+            print("警告: 没有生成任何 tokens")
+            tokens = torch.LongTensor()
+        else:
+            tokens = torch.stack(tokens_list).T
+            print(f"生成完成，总共获得 {tokens.shape[1]} 个 tokens")
+            print(f"生成的 token IDs: {tokens[0].tolist() if tokens.numel() > 0 else 'empty'}")
+    except KeyboardInterrupt:
+        print("\n用户中断了生成过程")
+        return
+    except Exception as e:
+        print(f"生成过程中出现错误: {e}")
+        import traceback
+        traceback.print_exc()
+        return
     # split
+    if tokens.numel() == 0:
+        print("错误: 没有生成任何 tokens，无法继续处理")
+        return
+
     boi, eoi = model.vocab.begin_image, model.vocab.end_image   # 8197(boi), 8196(eoi)
+    print(f"开始分割 token 序列，BOI={boi}, EOI={eoi}")
     segments = split_token_sequence(tokens, boi, eoi)
+    print(f"分割得到 {len(segments)} 个段")
+
     # decode
     os.makedirs(args.save_dir, exist_ok=True)
     for seg_id, (seg_type, seg_tokens) in enumerate(segments):
