@@ -120,7 +120,6 @@ def main(args: argparse.Namespace):
         for token in model.stream(batch_prompt_ui=batch_prompt_ui, options=options):
             token_id = token.id.item() if token.id.numel() == 1 else token.id[0].item()
             token_count += 1
-            print(f"Token {token_count}: ID={token_id}", flush=True)
 
             # 检查是否是特殊 token
             if token_id == eos_id:
@@ -131,9 +130,6 @@ def main(args: argparse.Namespace):
                 print(f"  检测到 EOI (End of Image) token")
 
             tokens_list.append(token.id)
-
-            if token_count % 10 == 0:
-                print(f"已生成 {token_count} 个 tokens...", flush=True)
 
         if not tokens_list:
             print("警告: 没有生成任何 tokens")
