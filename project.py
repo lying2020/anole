@@ -11,9 +11,13 @@ mme_data_path = "/home/liying/Documents/MLLMBenchMark/MME/extracted_data"
 
 amber_data_path = "/home/liying/Documents/MLLMBenchMark/AMBER/data"
 
-llava_v15_7b_path = "/home/liying/Documents/llava-v1.5-7b"
-clip_vit_large_patch14_path = "/home/liying/Documents/clip-vit-large-patch14"
 
+# llava_v15_7b_path = "/home/liying/Documents/llava-v1.5-7b"
+# clip_vit_large_patch14_path = "/home/liying/Documents/clip-vit-large-patch14"
 # anole_7b_v0_1_path = "/home/liying/Documents/Anole-7b-v0.1"
+# volcano_7b_path = "/home/liying/Documents/volcano-7b"
+
+llava_v15_7b_path = "/home1/cjl/models/llava-v1.5-7b"
+clip_vit_large_patch14_path = "/home1/cjl/models/clip-vit-large-patch14"
 anole_7b_v0_1_path = "/home1/cjl/models/anole-7b"
-volcano_7b_path = "/home/liying/Documents/volcano-7b"
+volcano_7b_path = "/home1/cjl/models/volcano-7b"
